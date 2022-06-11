@@ -7,18 +7,20 @@ add this to your main class
 new UpdateChecker (this).init(PluginName, PluginVersion, Url);
 ~~~
 
+example
+~~~java
+    @Override
+    public void onEnable() {
+        new UpdateChecker (this).init("JAntiPlugin", 1.6, "https://raw.githubusercontent.com/josemarcellio/UpdateChecker/master/my-plugin.json");
+    }
+~~~
+
 example json
 ~~~json
 {
   "Plugin": {
     "JAntiPlugin": {
       "Latest_Version": 1.7,
-    "Message": {
-      "Update_Message": "§c=============================================================\n\n§cYour {plugin} is outdated, please update your {plugin}!\n§cThere is a new version {latest_version}, you are still using version {version}\n\n§c============================================================="
-      }
-    },
-    "JEmoji": {
-      "Latest_Version": 1.3,
     "Message": {
       "Update_Message": "§c=============================================================\n\n§cYour {plugin} is outdated, please update your {plugin}!\n§cThere is a new version {latest_version}, you are still using version {version}\n\n§c============================================================="
       }
