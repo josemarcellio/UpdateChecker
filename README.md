@@ -4,7 +4,7 @@ Simple update checker for plugin using json
 ## Example
 add this to your main class
 ~~~java
-new UpdateChecker (this).init(PluginName, PluginVersion, Url);
+new UpdateChecker (JavaPlugin).init(PluginName, PluginVersion, Url);
 ~~~
 
 example
