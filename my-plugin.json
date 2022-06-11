@@ -1,0 +1,16 @@
+{
+  "Plugin": {
+    "JAntiPlugin": {
+      "Latest_Version": 1.7,
+    "Message": {
+      "Update_Message": "§c=============================================================\n\n§cYour {plugin} is outdated, please update your {plugin}!\n§cThere is a new version {latest_version}, you are still using version {version}\n\n§c============================================================="
+      }
+    },
+    "JEmoji": {
+      "Latest_Version": 1.3,
+    "Message": {
+      "Update_Message": "§c=============================================================\n\n§cYour {plugin} is outdated, please update your {plugin}!\n§cThere is a new version {latest_version}, you are still using version {version}\n\n§c============================================================="
+      }
+    }
+  }
+}
