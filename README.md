@@ -4,14 +4,14 @@ Simple update checker for plugin using json
 ## How to use
 add this to your main class
 ~~~java
-new UpdateChecker (JavaPlugin, PluginName, PluginVersion, Url).init();
+new UpdateChecker ().setJavaPlugin(JavaPlugin).setPluginName ( PluginName ).setPluginVersion ( PluginVersion ).setJsonURL ( URL ).init();
 ~~~
 
 example
 ~~~java
     @Override
     public void onEnable() {
-        new UpdateChecker (this, "JAntiPlugin", 1.6, "https://raw.githubusercontent.com/josemarcellio/UpdateChecker/master/my-plugin.json").init();
+        new UpdateChecker ().setJavaPlugin(this).setPluginName ( "JEmoji" ).setPluginVersion ( 1.4 ).setJsonURL ( "https://raw.githubusercontent.com/josemarcellio/my-plugin/master/update.json" ).init();
     }
 ~~~
 
