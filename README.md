@@ -11,7 +11,7 @@ example
 ~~~java
     @Override
     public void onEnable() {
-        new UpdateChecker ().setJavaPlugin(this).setPluginName ( "JEmoji" ).setPluginVersion ( 1.4 ).setJsonURL ( "https://raw.githubusercontent.com/josemarcellio/my-plugin/master/update.json" ).init();
+        new UpdateChecker ().setJavaPlugin(this).setPluginName ( "JAntiPlugin" ).setPluginVersion ( 1.6 ).setJsonURL ( "https://raw.githubusercontent.com/josemarcellio/my-plugin/master/update.json" ).init();
     }
 ~~~
 
