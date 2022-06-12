@@ -13,20 +13,38 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class UpdateChecker {
+public class UpdateChecker implements Update {
 
-    private final JavaPlugin plugin;
-    private final String plugin_Name;
-    private final Double plugin_Version;
-    private final String url;
+    private JavaPlugin plugin;
+    private String plugin_Name;
+    private Double plugin_Version;
+    private String url;
 
-    public UpdateChecker(JavaPlugin plugin, String plugin_Name, Double plugin_Version, String url) {
+    @Override
+    public Update setJavaPlugin(JavaPlugin plugin) {
         this.plugin = plugin;
-        this.plugin_Name = plugin_Name;
-        this.plugin_Version = plugin_Version;
-        this.url = url;
+        return this;
     }
 
+    @Override
+    public Update setPluginName(String name) {
+        this.plugin_Name = name;
+        return this;
+    }
+
+    @Override
+    public Update setPluginVersion(double version) {
+        this.plugin_Version = version;
+        return this;
+    }
+
+    @Override
+    public Update setJsonURL(String url) {
+        this.url = url;
+        return this;
+    }
+
+    @Override
     public void init() {
         readJsonObject();
     }
