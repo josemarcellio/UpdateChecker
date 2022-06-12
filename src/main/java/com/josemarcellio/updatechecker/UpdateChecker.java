@@ -16,17 +16,23 @@ import java.nio.charset.StandardCharsets;
 public class UpdateChecker {
 
     private final JavaPlugin plugin;
+    private final String plugin_Name;
+    private final Double plugin_Version;
+    private final String url;
 
-    public UpdateChecker(JavaPlugin plugin) {
+    public UpdateChecker(JavaPlugin plugin, String plugin_Name, Double plugin_Version, String url) {
         this.plugin = plugin;
+        this.plugin_Name = plugin_Name;
+        this.plugin_Version = plugin_Version;
+        this.url = url;
     }
 
-    public void init(String plugin_Name, double plugin_Version, String url) {
-        readJsonObject(plugin_Name, plugin_Version, getJsonUrl(url));
+    public void init() {
+        readJsonObject();
     }
 
-    private String getJsonUrl(String url) {
-        try (InputStream inputStream = new URL ( url).openStream();
+    public String getJsonUrl() {
+        try (InputStream inputStream = new URL ( this.url ).openStream();
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader (inputStream, StandardCharsets.UTF_8))) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String string = bufferedReader.readLine(); string != null; string = bufferedReader.readLine()) {
@@ -39,22 +45,22 @@ public class UpdateChecker {
         return null;
     }
 
-    private void readJsonObject(String plugin_Name, double plugin_Version, String json) {
-        JsonElement jsonElement = new JsonParser ().parse ( json );
+    private void readJsonObject() {
+        JsonElement jsonElement = new JsonParser ().parse ( getJsonUrl () );
         JsonObject jsonObject = jsonElement.getAsJsonObject ().getAsJsonObject ( "Plugin" );
-        if (jsonObject.has ( plugin_Name )) {
-            JsonObject jsonObjectAsJsonObject = jsonObject.getAsJsonObject ( plugin_Name );
+        if (jsonObject.has ( this.plugin_Name )) {
+            JsonObject jsonObjectAsJsonObject = jsonObject.getAsJsonObject ( this.plugin_Name );
             if (jsonObjectAsJsonObject.has ( "Message" ) && NumberUtils.toDouble ( jsonObjectAsJsonObject.getAsJsonPrimitive ( "Latest_Version" ).getAsString () ) > plugin_Version) {
-                sendUpdateMessage( plugin_Name, plugin_Version, jsonObjectAsJsonObject );
+                sendUpdateMessage(jsonObjectAsJsonObject );
             }
         }
     }
 
-    private void sendUpdateMessage(String plugin_Name, double plugin_Version, JsonObject json) {
+    private void sendUpdateMessage(JsonObject json) {
         JsonObject jsonObject = json.getAsJsonObject ( "Message" );
         String message = jsonObject.get("Update_Message").getAsString();
         for (String string : message.split("\n")) {
-            plugin.getLogger ().info ( string.replace("{version}", String.valueOf(plugin_Version)).replace("{plugin}", plugin_Name).replace("{latest_version}", json.getAsJsonPrimitive ("Latest_Version").toString()));
+            plugin.getLogger ().info ( string.replace("{version}", String.valueOf(this.plugin_Version)).replace("{plugin}", this.plugin_Name).replace("{latest_version}", json.getAsJsonPrimitive ("Latest_Version").toString()));
         }
     }
 }
