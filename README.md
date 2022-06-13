@@ -9,36 +9,9 @@ Simple update checker for minecraft plugin using json
 add this to your main class
 ~~~java
 new UpdateChecker ().setJavaPlugin(JavaPlugin)
-.setPluginName ( PluginName )
-.setPluginVersion ( PluginVersion )
-.setJsonURL ( URL )
+.setResourceId(ResourceID)
+.setMessage(Messages)
 .init();
-~~~
-
-example
-~~~java
-    @Override
-    public void onEnable() {
-        new UpdateChecker ().setJavaPlugin(this)
-        .setPluginName ( "JAntiPlugin" )
-        .setPluginVersion ( 1.6 )
-        .setJsonURL ( "https://raw.githubusercontent.com/josemarcellio/my-plugin/master/update.json" )
-        .init();
-    }
-~~~
-
-example json
-~~~json
-{
-  "Plugin": {
-    "JAntiPlugin": {
-      "Latest_Version": 1.7,
-    "Message": {
-      "Update_Message": "§cYour {plugin} version is {version}\n§cplease update your {plugin} to version {latest_version}!"
-      }
-    }
-  }
-}
 ~~~
 
 ## Maven
