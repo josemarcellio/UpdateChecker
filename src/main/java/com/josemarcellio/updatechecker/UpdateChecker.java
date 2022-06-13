@@ -1,11 +1,8 @@
 package com.josemarcellio.updatechecker;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.apache.commons.lang.math.NumberUtils;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,9 +13,8 @@ import java.nio.charset.StandardCharsets;
 public class UpdateChecker implements Update {
 
     private JavaPlugin plugin;
-    private String plugin_Name;
-    private Double plugin_Version;
-    private String url;
+    private int id;
+    private String message;
 
     @Override
     public Update setJavaPlugin(JavaPlugin plugin) {
@@ -27,20 +23,19 @@ public class UpdateChecker implements Update {
     }
 
     @Override
-    public Update setPluginName(String name) {
-        this.plugin_Name = name;
+    public String getPluginVersion() {
+        return plugin.getDescription ().getVersion ();
+    }
+
+    @Override
+    public Update setResourceId(int id) {
+        this.id = id;
         return this;
     }
 
     @Override
-    public Update setPluginVersion(double version) {
-        this.plugin_Version = version;
-        return this;
-    }
-
-    @Override
-    public Update setJsonURL(String url) {
-        this.url = url;
+    public Update setMessage(String message) {
+        this.message = message;
         return this;
     }
 
@@ -50,11 +45,11 @@ public class UpdateChecker implements Update {
     }
 
     public String getJsonUrl() {
-        try (InputStream inputStream = new URL ( this.url ).openStream();
+        try (InputStream inputStream = new URL ( "https://api.spiget.org/v2/resources/" + this.id + "/versions/latest" ).openStream();
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader (inputStream, StandardCharsets.UTF_8))) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String string = bufferedReader.readLine(); string != null; string = bufferedReader.readLine()) {
-                stringBuilder.append(string).append("\n");
+                stringBuilder.append(string);
             }
             return stringBuilder.toString();
         } catch (IOException e) {
@@ -65,20 +60,12 @@ public class UpdateChecker implements Update {
 
     private void readJsonObject() {
         JsonElement jsonElement = new JsonParser ().parse ( getJsonUrl () );
-        JsonObject jsonObject = jsonElement.getAsJsonObject ().getAsJsonObject ( "Plugin" );
-        if (jsonObject.has ( this.plugin_Name )) {
-            JsonObject jsonObjectAsJsonObject = jsonObject.getAsJsonObject ( this.plugin_Name );
-            if (jsonObjectAsJsonObject.has ( "Message" ) && NumberUtils.toDouble ( jsonObjectAsJsonObject.getAsJsonPrimitive ( "Latest_Version" ).getAsString () ) > plugin_Version) {
-                sendUpdateMessage(jsonObjectAsJsonObject );
+        JsonElement jsonObject = jsonElement.getAsJsonObject ().get ( "name" );
+        if (NumberUtils.toDouble ( jsonObject.getAsString () ) > NumberUtils.toDouble ( getPluginVersion () )) {
+            String message = this.message;
+            for (String string : message.split ( "\n" )) {
+                plugin.getLogger ().info ( string.replace ( "{current_version}", getPluginVersion () ).replace ( "{latest_version}", String.valueOf ( jsonObject.getAsDouble () ) ) );
             }
-        }
-    }
-
-    private void sendUpdateMessage(JsonObject json) {
-        JsonObject jsonObject = json.getAsJsonObject ( "Message" );
-        String message = jsonObject.get("Update_Message").getAsString();
-        for (String string : message.split("\n")) {
-            plugin.getLogger ().info ( string.replace("{version}", String.valueOf(this.plugin_Version)).replace("{plugin}", this.plugin_Name).replace("{latest_version}", json.getAsJsonPrimitive ("Latest_Version").toString()));
         }
     }
 }
