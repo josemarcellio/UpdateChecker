@@ -8,9 +8,10 @@ Simple update checker for minecraft plugin using json
 ## How to use
 add this to your main class
 ~~~java
-new UpdateChecker ().setJavaPlugin(JavaPlugin)
-.setResourceId(ResourceID)
-.setMessage(Messages)
+new UpdateChecker().setJavaPlugin( JavaPlugin )
+.setResourceId( ResourceId )
+.setProvider ( Provider.SPIGOT / Provider.SPIGET )
+.setMessage( Message )
 .init();
 ~~~
 
