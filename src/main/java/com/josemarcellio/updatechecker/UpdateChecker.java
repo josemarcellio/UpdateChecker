@@ -81,8 +81,8 @@ public class UpdateChecker implements Update {
                 }
             }
         } catch (JsonSyntaxException e) {
-            plugin.getLogger().info("your connection problem? or website is down? can't run update checker!");
-            plugin.getLogger().info("this has no effect with the plugin, you can still run the " + plugin.getDescription ().getName());
+            plugin.getLogger().info("your connection is offline? or website is down? can't run update checker!");
+            plugin.getLogger().info("don't worry, you can still use " + plugin.getDescription ().getName());
         }
     }
 }
