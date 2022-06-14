@@ -44,41 +44,45 @@ public class UpdateChecker implements Update {
 
     @Override
     public void init() {
-        readJsonObject();
+        readObject ();
     }
 
-    public String getJsonUrl() {
-        String url = this.provider.url.replace("%resourceId%", String.valueOf(this.id));
-        try (InputStream inputStream = new URL ( url ).openStream();
-             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader (inputStream, StandardCharsets.UTF_8))) {
-            StringBuilder stringBuilder = new StringBuilder();
-            for (String string = bufferedReader.readLine(); string != null; string = bufferedReader.readLine()) {
-                stringBuilder.append(string);
+    public String getUrl() {
+        String url = this.provider.url.replace ( "%resourceId%", String.valueOf ( this.id ) );
+        try (InputStream inputStream = new URL ( url ).openStream ();
+             BufferedReader bufferedReader = new BufferedReader ( new InputStreamReader ( inputStream, StandardCharsets.UTF_8 ) )) {
+            StringBuilder stringBuilder = new StringBuilder ();
+            for (String string = bufferedReader.readLine (); string != null; string = bufferedReader.readLine ()) {
+                stringBuilder.append ( string );
             }
-            return stringBuilder.toString();
+            return stringBuilder.toString ();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new JsonSyntaxException ( e );
         }
-        return null;
     }
 
-    private void readJsonObject() {
-        JsonElement jsonElement = new JsonParser ().parse ( getJsonUrl () );
-        Provider provider = this.provider;
-        switch (provider) {
-            case SPIGOT:
-                this.object = "current_version";
-                break;
-            case SPIGET:
-                this.object = "name";
-                break;
-        }
-        JsonElement jsonObject = jsonElement.getAsJsonObject ().get ( this.object );
-        if (NumberUtils.toDouble ( jsonObject.getAsString () ) > NumberUtils.toDouble ( plugin.getDescription ().getVersion() )) {
-            String message = this.message.replace ( "{current_version}", plugin.getDescription ().getVersion() ).replace ( "{latest_version}", String.valueOf ( jsonObject.getAsDouble () )).replace("{plugin_name}", plugin.getDescription().getName());
-            for (String string : message.split ( "\n" )) {
-                plugin.getLogger ().info ( string );
+    private void readObject() {
+        try {
+            JsonElement jsonElement = new JsonParser ().parse ( getUrl () );
+            Provider provider = this.provider;
+            switch (provider) {
+                case SPIGOT:
+                    this.object = "current_version";
+                    break;
+                case SPIGET:
+                    this.object = "name";
+                    break;
             }
+            JsonElement jsonObject = jsonElement.getAsJsonObject ().get ( this.object );
+            if (NumberUtils.toDouble ( jsonObject.getAsString () ) > NumberUtils.toDouble ( plugin.getDescription ().getVersion () )) {
+                String message = this.message.replace ( "{current_version}", plugin.getDescription ().getVersion () ).replace ( "{latest_version}", String.valueOf ( jsonObject.getAsDouble () ) ).replace ( "{plugin_name}", plugin.getDescription ().getName () );
+                for (String string : message.split ( "\n" )) {
+                    plugin.getLogger ().info ( string );
+                }
+            }
+        } catch (JsonSyntaxException e) {
+            plugin.getLogger().info("your connection problem? or website is down? can't run update checker!");
+            plugin.getLogger().info("this has no effect with the plugin, you can still run the " + plugin.getDescription ().getName());
         }
     }
 }
