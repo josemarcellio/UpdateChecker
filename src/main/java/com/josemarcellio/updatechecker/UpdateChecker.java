@@ -14,7 +14,9 @@ public class UpdateChecker implements Update {
 
     private JavaPlugin plugin;
     private int id;
+    private Provider provider;
     private String message;
+    private String object;
 
     @Override
     public Update setJavaPlugin(JavaPlugin plugin) {
@@ -23,13 +25,14 @@ public class UpdateChecker implements Update {
     }
 
     @Override
-    public String getPluginVersion() {
-        return plugin.getDescription ().getVersion ();
+    public Update setResourceId(int id) {
+        this.id = id;
+        return this;
     }
 
     @Override
-    public Update setResourceId(int id) {
-        this.id = id;
+    public Update setProvider(Provider provider) {
+        this.provider = provider;
         return this;
     }
 
@@ -45,7 +48,8 @@ public class UpdateChecker implements Update {
     }
 
     public String getJsonUrl() {
-        try (InputStream inputStream = new URL ( "https://api.spiget.org/v2/resources/" + this.id + "/versions/latest" ).openStream();
+        String url = this.provider.url.replace("%resourceId%", String.valueOf(this.id));
+        try (InputStream inputStream = new URL ( url ).openStream();
              BufferedReader bufferedReader = new BufferedReader(new InputStreamReader (inputStream, StandardCharsets.UTF_8))) {
             StringBuilder stringBuilder = new StringBuilder();
             for (String string = bufferedReader.readLine(); string != null; string = bufferedReader.readLine()) {
@@ -60,11 +64,20 @@ public class UpdateChecker implements Update {
 
     private void readJsonObject() {
         JsonElement jsonElement = new JsonParser ().parse ( getJsonUrl () );
-        JsonElement jsonObject = jsonElement.getAsJsonObject ().get ( "name" );
-        if (NumberUtils.toDouble ( jsonObject.getAsString () ) > NumberUtils.toDouble ( getPluginVersion () )) {
-            String message = this.message;
+        Provider provider = this.provider;
+        switch (provider) {
+            case SPIGOT:
+                this.object = "current_version";
+                break;
+            case SPIGET:
+                this.object = "name";
+                break;
+        }
+        JsonElement jsonObject = jsonElement.getAsJsonObject ().get ( this.object );
+        if (NumberUtils.toDouble ( jsonObject.getAsString () ) > NumberUtils.toDouble ( plugin.getDescription ().getVersion() )) {
+            String message = this.message.replace ( "{current_version}", plugin.getDescription ().getVersion() ).replace ( "{latest_version}", String.valueOf ( jsonObject.getAsDouble () )).replace("{plugin_name}", plugin.getDescription().getName());
             for (String string : message.split ( "\n" )) {
-                plugin.getLogger ().info ( string.replace ( "{current_version}", getPluginVersion () ).replace ( "{latest_version}", String.valueOf ( jsonObject.getAsDouble () ) ) );
+                plugin.getLogger ().info ( string );
             }
         }
     }

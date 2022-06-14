@@ -6,11 +6,11 @@ public interface Update {
 
     Update setJavaPlugin(JavaPlugin plugin);
 
-    String getPluginVersion();
-
     Update setResourceId(int id);
 
     Update setMessage(String message);
+
+    Update setProvider(Provider provider);
 
     void init();
 }
